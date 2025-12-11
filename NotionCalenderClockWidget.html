@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notion Widget - Date & Time</title>
+<style>
+  body {
+    margin: 0;
+    font-family: "Inter", "Noto Sans JP", sans-serif;
+    background: #ffffff00; /* Notionと馴染む透明背景 */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .widget {
+    text-align: center;
+    padding: 20px 30px;
+    border-radius: 16px;
+    backdrop-filter: blur(6px);
+    background: rgba(255,255,255,0.6);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .date {
+    font-size: 20px;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+
+  .time {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="widget">
+  <div class="date" id="date"></div>
+  <div class="time" id="time"></div>
+</div>
+
+<script>
+function updateWidget() {
+  const now = new Date();
+  const weekdays = ["日","月","火","水","木","金","土"];
+
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  const weekday = weekdays[now.getDay()];
+
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+
+  document.getElementById("date").textContent = `${year}年${month}月${day}日（${weekday}）`;
+  document.getElementById("time").textContent = `${hours}:${minutes}`;
+}
+
+// 初回実行
+updateWidget();
+// 1分ごとに更新
+setInterval(updateWidget, 1000);
+</script>
+
+</body>
+</html>

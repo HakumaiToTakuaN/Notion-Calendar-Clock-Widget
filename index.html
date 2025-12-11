@@ -10,17 +10,19 @@
   /* 全体の色の設定（変数） */
   :root {
     /* ライトモード（明るいとき）の色 */
-    --bg-color: #ffffff;       /* 箱の背景色：白 */
-    --text-color: #333333;     /* 文字の色：濃いグレー */
-    --border-color: #333333;   /* 枠線の色：濃いグレー（手書き風の濃さを意識） */
+    --card-bg: rgba(255, 255, 255, 0.75); /* カードの背景：白の半透明（75%） */
+    --text-color: #2c2c2c;               /* 文字の色：濃い墨色 */
+    --border-color: #2c2c2c;             /* 枠線の色：文字と同じ */
+    --shadow: 0 4px 10px rgba(0,0,0,0.1);/* うっすら影をつける */
   }
 
   /* ダークモード（Notionが黒いとき）の設定 */
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg-color: #2f3437;     /* 箱の背景色：Notionっぽい濃いグレー */
-      --text-color: #ffffff;   /* 文字の色：白 */
-      --border-color: #555555; /* 枠線の色：少し明るいグレー */
+      --card-bg: rgba(40, 40, 40, 0.6);  /* 背景：黒っぽいグレーの半透明 */
+      --text-color: #e0e0e0;             /* 文字：白に近いグレー */
+      --border-color: #e0e0e0;           /* 枠線：白に近いグレー */
+      --shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
   }
 
@@ -40,16 +42,15 @@
   .clock-container {
     display: flex;       /* 横並びにする */
     gap: 12px;           /* 箱と箱の間の隙間 */
-    padding: 10px;
   }
 
   /* 箱（カード）共通のデザイン */
   .card {
-    background-color: var(--bg-color);
+    background-color: var(--card-bg);
     color: var(--text-color);
     border: 2px solid var(--border-color); /* 手書き風のしっかりした枠線 */
     border-radius: 12px;       /* 角を少し丸くする */
-    padding: 10px;
+    padding: 10px;             /* 内側の余白 */
     display: flex;             /* 箱の中身の位置調整用 */
     flex-direction: column;    /* 中身を縦に積む */
     justify-content: center;   /* 真ん中に */
@@ -63,14 +64,18 @@
 
   /* --- 1つ目の箱：日付エリアの特別設定 --- */
   .date-card {
-    min-width: 110px; /* 日付は文字が多いので少し幅広に */
+    min-width: 110px;        /* 幅を少し広めに確保 */
     align-items: flex-start; /* 左寄せにする */
-    padding-left: 18px;      /* 左の余白 */
+    padding-left: 15px;      /* 左の余白を少し足す */
+    justify-content: space-between; /* 上と下に要素を離す */
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
 
   .month-text {
     font-size: 1.2rem; /* 月の文字サイズ */
     font-weight: bold;
+    text-transform: uppercase; /* 強制的に大文字にする (dec -> DEC) */
     opacity: 0.7;      /* 少し薄くしておしゃれに */
     margin-bottom: 4px;
   }
@@ -83,7 +88,7 @@
 
   .day-text {
     font-size: 2.2rem; /* 日にちの文字を大きく */
-    font-weight: 800;  /* 極太に */
+    font-weight: bold;  /* 極太に */
     line-height: 1;    /* 行間を詰める */
   }
 
@@ -99,7 +104,7 @@
 
   .time-text {
     font-size: 3.5rem; /* 時間の数字を超大きく */
-    font-weight: 800;  /* 極太 */
+    font-weight: bold;  /* 極太 */
     line-height: 1;
     letter-spacing: -2px; /* 数字同士の間隔を少し詰める */
   }

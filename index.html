@@ -3,172 +3,187 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notion Clock Widget</title>
+<title>Notion Clock Widget - Vertical Layout</title>
 <style>
-  /* --- ここからデザイン（見た目）の設定 --- */
+  /* === デザイン設定エリア (CSS) === */
 
-  /* 全体の色の設定（変数） */
   :root {
-    /* ライトモード（明るいとき）の色 */
-    --card-bg: rgba(255, 255, 255, 0.75); /* カードの背景：白の半透明（75%） */
-    --text-color: #2c2c2c;               /* 文字の色：濃い墨色 */
-    --border-color: #2c2c2c;             /* 枠線の色：文字と同じ */
-    --shadow: 0 4px 10px rgba(0,0,0,0.1);/* うっすら影をつける */
+    /* --- 色の設定（変数） --- */
+    /* ライトモード（明るい画面）のときの色 */
+    --card-bg: rgba(255, 255, 255, 0.75); /* 白の半透明 */
+    --text-color: #2c2c2c;               /* 濃い墨色 */
+    --border-color: #2c2c2c;             /* 枠線の色 */
+    --shadow: 0 4px 10px rgba(0,0,0,0.1);
   }
 
-  /* ダークモード（Notionが黒いとき）の設定 */
+  /* ダークモードの自動切り替え設定 */
   @media (prefers-color-scheme: dark) {
     :root {
-      --card-bg: rgba(40, 40, 40, 0.6);  /* 背景：黒っぽいグレーの半透明 */
-      --text-color: #e0e0e0;             /* 文字：白に近いグレー */
-      --border-color: #e0e0e0;           /* 枠線：白に近いグレー */
+      --card-bg: rgba(40, 40, 40, 0.6);  /* 黒っぽいグレーの半透明 */
+      --text-color: #e0e0e0;             /* 白に近いグレー */
+      --border-color: #e0e0e0;           /* 枠線 */
       --shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
   }
 
   body {
     margin: 0;
-    /* フォント（文字の形）の指定。デジタル時計っぽく読みやすいものを指定 */
-    font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
-    background-color: transparent; /* 背景は透明にしてNotionに馴染ませる */
-    display: flex;             /* 箱を横並びにするための魔法の呪文 */
-    justify-content: center;   /* 真ん中に寄せる */
-    align-items: center;       /* 上下の真ん中に寄せる */
-    height: 100vh;             /* 画面いっぱいの高さを使う */
-    overflow: hidden;          /* スクロールバーを出さない */
+    /* フォント設定 */
+    font-family: "Helvetica Neue", "Arial", "Hiragino Kaku Gothic ProN", sans-serif;
+    background-color: transparent; /* 背景は透明 */
+    display: flex;                 /* 全体を真ん中に寄せる */
+    justify-content: center;       /* 左右の真ん中 */
+    align-items: center;           /* 上下の真ん中 */
+    height: 100vh;                 /* 画面の高さを100%使う */
+    overflow: hidden;              /* スクロールバーを出さない */
   }
 
-  /* 3つの箱を包むコンテナ（入れ物） */
-  .clock-container {
-    display: flex;       /* 横並びにする */
-    gap: 5px;           /* 箱と箱の間の隙間 */
+  /* 2つのブロック（上段と下段）をまとめるコンテナ */
+  .container {
+    display: flex;            /* 配置の設定 */
+    flex-direction: column;   /* 要素を「縦」に並べる */
+    gap: 12px;                /* ブロックとブロックの間隔 */
+    width: 200px;             /* ウィジェットの最大幅を固定し、Notion内での収まりを良くする */
+    max-width: 90vw;          /* 画面幅の90%を超えないようにする */
   }
 
-  /* 箱（カード）共通のデザイン */
+  /* === カード（箱）の共通デザイン === */
   .card {
     background-color: var(--card-bg);
     color: var(--text-color);
-    border: 2px solid var(--border-color); /* 手書き風のしっかりした枠線 */
-    border-radius: 12px;       /* 角を少し丸くする */
-    padding: 10px;             /* 内側の余白 */
-    display: flex;             /* 箱の中身の位置調整用 */
-    flex-direction: column;    /* 中身を縦に積む */
-    justify-content: center;   /* 真ん中に */
-    align-items: center;       /* 真ん中に */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1); /* うっすら影をつける */
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 15px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(5px);
     
-    /* 箱の高さと幅の最小サイズ設定 */
-    height: 120px;
-    min-width: 80px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  /* --- 1つ目の箱：日付エリアの特別設定 --- */
-  .date-card {
-    min-width: 110px;        /* 幅を少し広めに確保 */
-    align-items: flex-start; /* 左寄せにする */
-    padding-left: 15px;      /* 左の余白を少し足す */
-    justify-content: space-between; /* 上と下に要素を離す */
-    padding-top: 15px;
-    padding-bottom: 15px;
+  /* --- 1つ目のブロック（上段）：日付エリア --- */
+  .date-block {
+    /* 中身（月、日、曜日）を縦に並べる */
+    flex-direction: column;
+    height: 90px;
+    padding: 10px 15px; /* 上下は小さく、左右は余白を多めに */
   }
 
+  /* 日付と曜日を横に並べるための行 */
+  .date-row {
+    display: flex;
+    align-items: baseline; 
+    gap: 8px;
+  }
+
+  /* 月（上段） */
   .month-text {
-    font-size: 1.2rem; /* 月の文字サイズ */
-    font-weight: bold;
-    text-transform: uppercase; /* 強制的に大文字にする (dec -> DEC) */
-    opacity: 0.7;      /* 少し薄くしておしゃれに */
-    margin-bottom: 4px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-transform: uppercase; 
+    opacity: 0.8;
+    margin-bottom: 4px; /* 日付との間に少し隙間 */
   }
 
-  .day-group {
-    display: flex;    /* 日付と曜日を横並びに */
-    align-items: baseline; /* 下のラインを揃える */
-    gap: 5px;
-  }
-
-  .day-text {
-    font-size: 2.2rem; /* 日にちの文字を大きく */
-    font-weight: bold;  /* 極太に */
-    line-height: 1;    /* 行間を詰める */
-  }
-
-  .weekday-text {
-    font-size: 1rem;
-    font-weight: bold;
-  }
-
-  /* --- 2つ目と3つ目の箱：時間の数字エリア --- */
-  .time-card {
-    min-width: 90px;
-  }
-
-  .time-text {
-    font-size: 3.5rem; /* 時間の数字を超大きく */
-    font-weight: bold;  /* 極太 */
+  /* 日付の数字 */
+  .day-number {
+    font-size: 2.5rem;
+    font-weight: 800;
     line-height: 1;
-    letter-spacing: -2px; /* 数字同士の間隔を少し詰める */
+  }
+
+  /* 曜日 */
+  .weekday-text {
+    font-size: 1.1rem;
+    font-weight: bold;
+  }
+  
+  /* --- 2つ目のブロック（下段）：時刻エリア --- */
+  .time-block {
+    display: flex;      /* 時と分を横並びにする */
+    gap: 8px;           /* 時と分の間の隙間 */
+    height: 80px;
+  }
+
+  /* 時と分の個別の箱 */
+  .time-unit-card {
+    /* cardのスタイルを継承しつつ、個別に設定 */
+    flex: 1; /* 2つの箱が同じ幅になるように自動調整 */
+    padding: 0; /* time-block内で調整するため、内側のpaddingをリセット */
+    justify-content: center;
+    align-items: center;
+    /* 枠線と背景はtime-blockで設定済みのため、ここでは文字サイズに集中 */
+    
+    background-color: transparent; /* time-blockの背景を使う */
+    border: none; /* time-blockの枠線を使う */
+    box-shadow: none;
+  }
+  
+  /* 時と分の数字 */
+  .time-text {
+    font-size: 3.2rem;       /* 大きめの数字 */
+    font-weight: 800;
+    line-height: 1;
   }
 
 </style>
 </head>
 <body>
 
-<div class="clock-container">
+<div class="container">
   
-  <div class="card date-card">
-    <div class="month-text" id="month">Wait..</div>
-    <div class="day-group">
-      <span class="day-text" id="day">--</span>
-      <span class="weekday-text" id="weekday">--</span>
+  <div class="card date-block">
+    <div class="month-text" id="month">DEC</div>
+    <div class="date-row">
+      <span class="day-number" id="day">11</span>
+      <span class="weekday-text" id="weekday">THU</span>
     </div>
   </div>
 
-  <div class="card time-card">
-    <div class="time-text" id="hours">--</div>
-  </div>
+  <div class="card time-block">
+    <div class="time-unit-card">
+      <div class="time-text" id="hour">11</div>
+    </div>
+    
+    <div style="font-size: 3.2rem; font-weight: 800; line-height: 1; color: var(--text-color); align-self: center;">:</div>
 
-  <div class="card time-card">
-    <div class="time-text" id="minutes">--</div>
+    <div class="time-unit-card">
+      <div class="time-text" id="minute">18</div>
+    </div>
   </div>
 
 </div>
 
 <script>
-// --- ここからプログラム（動き）の部分 ---
+  /* === プログラムエリア (JavaScript) === */
 
-function updateClock() {
-  // 1. 今の時間を取得する
-  const now = new Date();
+  function updateClock() {
+    const now = new Date();
 
-  // 2. 必要な情報（年・月・日・曜日・時・分）を取り出す
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  // もし日本語（1月, 2月...）がいい場合は上を消して下を使ってください
-  // const months = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+    // 英語表記の月と曜日
+    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+    const weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-  const weekdays = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
-  // もし日本語（日, 月...）がいい場合は下を使ってください
-  // const weekdays = ["日", "月", "火", "水", "木", "金", "土"];
+    const monthName = months[now.getMonth()];
+    const dayNumber = now.getDate();
+    const weekdayName = weekdays[now.getDay()];
 
-  const currentMonth = months[now.getMonth()]; // 月
-  const currentDay = now.getDate();            // 日
-  const currentWeekday = weekdays[now.getDay()]; // 曜日
-  
-  const currentHours = String(now.getHours()).padStart(2, "0");   // 時（1桁なら0をつける）
-  const currentMinutes = String(now.getMinutes()).padStart(2, "0"); // 分（1桁なら0をつける）
+    // 1桁の数字に「0」を付けて2桁にする
+    const hourString = String(now.getHours()).padStart(2, '0');
+    const minString = String(now.getMinutes()).padStart(2, '0');
 
-  // 3. 画面の文字を書き換える
-  document.getElementById("month").textContent = currentMonth;
-  document.getElementById("day").textContent = currentDay;
-  document.getElementById("weekday").textContent = currentWeekday;
-  document.getElementById("hours").textContent = currentHours;
-  document.getElementById("minutes").textContent = currentMinutes;
-}
+    // HTMLの表示を更新
+    document.getElementById('month').textContent = monthName;
+    document.getElementById('day').textContent = dayNumber;
+    document.getElementById('weekday').textContent = weekdayName;
+    document.getElementById('hour').textContent = hourString;
+    document.getElementById('minute').textContent = minString;
+  }
 
-// ページを開いた瞬間に一度実行する
-updateClock();
-
-// その後は1秒ごとに実行して時間を更新する
-setInterval(updateClock, 1000);
+  // 初回実行と1秒ごとの更新
+  updateClock();
+  setInterval(updateClock, 1000);
 
 </script>
 
